@@ -6,7 +6,6 @@
 
 #include <cmath>
 #include <complex>
-#include <array>
 #include <iostream>
 #include <iomanip>
 
@@ -21,7 +20,11 @@ using namespace normalform;
 using namespace std;
 
 
+#ifdef MSVC
 int _tmain(int argc, _TCHAR* argv[])
+#else
+int main(int argc, char* argv[])
+#endif
 {
 	const unsigned int N = 2;     // number of degree of freedom
 	const unsigned int order = 5; // normalization order

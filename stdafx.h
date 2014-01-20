@@ -5,8 +5,9 @@
 
 #pragma once
 
-
+#ifdef MSVC
 #include <iostream>
 #include <tchar.h>
+#endif
 
 // TODO: reference additional headers your program requires here

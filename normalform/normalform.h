@@ -7,6 +7,10 @@
 #include "normalform/monomcoeff.h"
 #include "normalform/polynom.h"
 
+#ifdef NF_LOGGING
+#include <iostream>
+#endif
+
 namespace normalform {
 
 	using std::complex;
@@ -59,7 +63,7 @@ namespace normalform {
 
 			//Get linear part
 #ifdef NF_LOGGING
-			printf("Get frequencies...\n");
+			std::cout << "Get frequencies...\n";
 #endif
 			for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator it = H0.list.begin(); it != H0.list.end(); ++it)
 			{
@@ -74,14 +78,14 @@ namespace normalform {
 
 			//Normalization
 #ifdef NF_LOGGING
-			printf("Normalization...\n");
+			std::cout << "Normalization...\n";
 #endif
 			L[0][0] = H[0];
 			K[0] = H[0];
 			for(size_t n = 1; n < order; n++)
 			{
 #ifdef NF_LOGGING
-				printf("\n%d-th order (%d-th in H)", n, n+2);
+				std::cout << "\n" << n << "-th order (" << (n+2) << "-th in H)";
 #endif
 				L[n][0] = H[n];
 				for(size_t i = 1; i <= n; i++)
@@ -134,7 +138,7 @@ namespace normalform {
 			for(size_t n = 1; n < order; n++)
 			{
 #ifdef NF_LOGGING
-				printf(".");
+				std::cout << ".";
 #endif
 				for(size_t j = 1; j <= n; j++)
 				{
@@ -166,7 +170,7 @@ namespace normalform {
 			for(size_t n = 1; n < order; n++)
 			{
 #ifdef NF_LOGGING
-				printf(".");
+				std::cout << ".";
 #endif
 				for(size_t j = n; j > 0; j--)
 				{

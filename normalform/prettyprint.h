@@ -9,7 +9,7 @@ namespace normalform {
 	template<size_t N,size_t order,class Tfloat>
 	std::ostream& operator <<(std::ostream& stream, const boost::array<CPolynom<N,Tfloat>,order>& H)
 	{
-		ios::fmtflags savedFlags(stream.flags());
+		std::ios::fmtflags savedFlags(stream.flags());
 		stream << std::noshowpos;
 
 		Tfloat factorial = (Tfloat)1;
@@ -32,10 +32,10 @@ namespace normalform {
 			stream << "(";
 
 			// @TODO: convert boost::unordered_map to boost::map for monom ordering
-			typedef std::map<CMonom<N>,complex<Tfloat>> ordered_serie;
+			typedef std::map<CMonom<N>,complex<Tfloat> > ordered_serie;
 			ordered_serie serie(H[i].list.begin(), H[i].list.end());
 
-			for(ordered_serie::const_iterator it = serie.begin(); it != serie.end(); ++it)
+			for(typename ordered_serie::const_iterator it = serie.begin(); it != serie.end(); ++it)
 			{
 				if(it->second.imag() == 0)
 					stream << std::showpos << it->second.real()/factorial << std::noshowpos;
