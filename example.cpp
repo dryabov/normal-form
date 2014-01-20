@@ -20,7 +20,7 @@ using namespace normalform;
 using namespace std;
 
 
-#ifdef MSVC
+#ifdef _MSC_VER
 int _tmain(int argc, _TCHAR* argv[])
 #else
 int main(int argc, char* argv[])
@@ -41,10 +41,10 @@ int main(int argc, char* argv[])
 	// complex coordinates to diagonalize linear part
 	// q1 = (Q1+i*P1)/sqrt(2),  p1 = (i*Q1+P1)/sqrt(2)
 	// q2 = (Q2+i*P2)/sqrt(2),  p2 = (i*Q2+P2)/sqrt(2)
-	Polynom q1 = Polynom() + Term(Complex(sqrt(0.5),0), m1000) + Term(Complex(0,sqrt(0.5)), m0010);
-	Polynom p1 = Polynom() + Term(Complex(0,sqrt(0.5)), m1000) + Term(Complex(sqrt(0.5),0), m0010);
-	Polynom q2 = Polynom() + Term(Complex(sqrt(0.5),0), m0100) + Term(Complex(0,sqrt(0.5)), m0001);
-	Polynom p2 = Polynom() + Term(Complex(0,sqrt(0.5)), m0100) + Term(Complex(sqrt(0.5),0), m0001);
+	Polynom q1 = Term(Complex(sqrt(0.5),0), m1000) + Term(Complex(0,sqrt(0.5)), m0010);
+	Polynom p1 = Term(Complex(0,sqrt(0.5)), m1000) + Term(Complex(sqrt(0.5),0), m0010);
+	Polynom q2 = Term(Complex(sqrt(0.5),0), m0100) + Term(Complex(0,sqrt(0.5)), m0001);
+	Polynom p2 = Term(Complex(0,sqrt(0.5)), m0100) + Term(Complex(sqrt(0.5),0), m0001);
 
 	// H = (p1^2+p2^2)/2 + (q1^2+q2^2)/2 + q1^2*q2 - q2^3/3
 	Polynom H = Complex(0.5)*(p1*p1 + p2*p2 + q1*q1 + q2*q2) + q1*q1*q2 - Complex(1.0/3.0) * q2*q2*q2;

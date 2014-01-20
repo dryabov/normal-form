@@ -6,6 +6,47 @@
 
 namespace normalform {
 
+	template<size_t N>
+	std::ostream& operator <<(std::ostream& stream, const CMonom<N>& m)
+	{
+		for(size_t i = 0; i < 2*N; i++)
+		{
+			if(m[i])
+			{
+				if(i < N)
+					stream << "q" << (i+1);
+				else
+					stream << "p" << (i+1-N);
+
+				if(m[i] > 1)
+					stream << "^" << (size_t)m[i];
+
+				stream << " ";
+			}
+		}
+		return stream;
+	}
+
+	template<size_t N,class Tfloat>
+	std::ostream& operator <<(std::ostream& stream, const CPolynom<N,Tfloat>& p)
+	{
+		typedef std::map<CMonom<N>,complex<Tfloat> > ordered_serie;
+		ordered_serie serie(p.list.begin(), p.list.end());
+
+		for(typename ordered_serie::const_iterator it = serie.begin(); it != serie.end(); ++it)
+		{
+			if(it->second.imag() == 0)
+				stream << std::showpos << it->second.real() << std::noshowpos;
+			else if(it->second.real() == 0)
+				stream << std::showpos << it->second.imag() << std::noshowpos << "*I";
+			else
+				stream << "+(" << it->second.real() << std::showpos << it->second.imag() << std::noshowpos << "*I";
+
+			stream << " " << it->first;
+		}
+		return stream;
+	}
+
 	template<size_t N,size_t order,class Tfloat>
 	std::ostream& operator <<(std::ostream& stream, const boost::array<CPolynom<N,Tfloat>,order>& H)
 	{
@@ -23,46 +64,17 @@ namespace normalform {
 
 			if(i)
 			{
-				stream << "+eps";
+				stream << " + eps";
 				if(i > 1)
 					stream << "^" << i;
+
+				if(factorial > (Tfloat)1.5)
+					stream << "/" << factorial;
+
 				stream << " ";
 			}
 
-			stream << "(";
-
-			// @TODO: convert boost::unordered_map to boost::map for monom ordering
-			typedef std::map<CMonom<N>,complex<Tfloat> > ordered_serie;
-			ordered_serie serie(H[i].list.begin(), H[i].list.end());
-
-			for(typename ordered_serie::const_iterator it = serie.begin(); it != serie.end(); ++it)
-			{
-				if(it->second.imag() == 0)
-					stream << std::showpos << it->second.real()/factorial << std::noshowpos;
-				else if(it->second.real() == 0)
-					stream << std::showpos << it->second.imag()/factorial << std::noshowpos << "*I";
-				else
-					stream << "+(" << it->second.real()/factorial << std::showpos << it->second.imag()/factorial << std::noshowpos << "*I";
-
-				stream << " ";
-				for(size_t i = 0; i < 2*N; i++)
-				{
-					if(it->first[i])
-					{
-						if(i < N)
-							stream << "q" << (i+1);
-						else
-							stream << "p" << (i+1-N);
-
-						if(it->first[i] > 1)
-							stream << "^" << (size_t)it->first[i];
-
-						stream << " ";
-					}
-				}
-			}
-
-			stream << ")";
+			stream << "(" << H[i] << ")";
 		}
 
 		stream.flags(savedFlags);

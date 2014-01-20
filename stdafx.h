@@ -5,7 +5,7 @@
 
 #pragma once
 
-#ifdef MSVC
+#ifdef _MSC_VER
 #include <iostream>
 #include <tchar.h>
 #endif

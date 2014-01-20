@@ -2,6 +2,7 @@
 
 #include <utility>
 #include <complex>
+#include <cmath>
 
 #include <boost/unordered_map.hpp>
 
@@ -20,7 +21,7 @@ namespace normalform {
 	template<class Tfloat>
 	inline bool isZero(const complex<Tfloat> x)
 	{
-		return abs(x.real()) < (Tfloat)1e-8 && abs(x.imag()) < (Tfloat)1e-8;
+		return (std::abs(x.real()) < (Tfloat)1e-8) && (std::abs(x.imag()) < (Tfloat)1e-8);
 	}
 
 
@@ -28,8 +29,10 @@ namespace normalform {
 	template<size_t,class Tfloat> class CPolynom;
 	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
 	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator +(const CMonomCoeff<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
 	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
 	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator -(const CMonomCoeff<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
 	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
 	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>&, const complex<Tfloat>&);
 	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator *(const complex<Tfloat>&, const CPolynom<N,Tfloat>&);
@@ -61,8 +64,10 @@ namespace normalform {
 		void Simplify();
 		friend CPolynom<N,Tfloat> operator +<>(const CPolynom<N,Tfloat>& p1, const CPolynom<N,Tfloat>& p2);
 		friend CPolynom<N,Tfloat> operator +<>(const CPolynom<N,Tfloat>& p, const CMonomCoeff<N,Tfloat>& m);
+		friend CPolynom<N,Tfloat> operator +<>(const CMonomCoeff<N,Tfloat>& m1, const CMonomCoeff<N,Tfloat>& m2);
 		friend CPolynom<N,Tfloat> operator -<>(const CPolynom<N,Tfloat>& p1, const CPolynom<N,Tfloat>& p2);
 		friend CPolynom<N,Tfloat> operator -<>(const CPolynom<N,Tfloat>& p, const CMonomCoeff<N,Tfloat>& m);
+		friend CPolynom<N,Tfloat> operator -<>(const CMonomCoeff<N,Tfloat>& m1, const CMonomCoeff<N,Tfloat>& m2);
 		friend CPolynom<N,Tfloat> operator *<>(const CPolynom<N,Tfloat>& p1, const CPolynom<N,Tfloat>& p2);
 		friend CPolynom<N,Tfloat> operator *<>(const CPolynom<N,Tfloat>& p, const complex<Tfloat>& r);
 		friend CPolynom<N,Tfloat> operator *<>(const complex<Tfloat>& r, const CPolynom<N,Tfloat>& p);
@@ -132,6 +137,15 @@ namespace normalform {
 	}
 
 	template<size_t N,class Tfloat>
+	inline CPolynom<N,Tfloat> operator +(const CMonomCoeff<N,Tfloat>& m1, const CMonomCoeff<N,Tfloat>& m2)
+	{
+		CPolynom<N,Tfloat> p;
+		p.list[m1.monom] += m1.coeff;
+		p.list[m2.monom] += m2.coeff;
+		return p;
+	}
+
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>& p1, const CPolynom<N,Tfloat>& p2)
 	{
 		CPolynom<N,Tfloat> p(p1);
@@ -161,6 +175,15 @@ namespace normalform {
 	{
 		list[mc.monom] -= mc.coeff;
 		return *this;
+	}
+
+	template<size_t N,class Tfloat>
+	inline CPolynom<N,Tfloat> operator -(const CMonomCoeff<N,Tfloat>& m1, const CMonomCoeff<N,Tfloat>& m2)
+	{
+		CPolynom<N,Tfloat> p;
+		p.list[m1.monom] -= m1.coeff;
+		p.list[m2.monom] -= m2.coeff;
+		return p;
 	}
 
 	template<size_t N,class Tfloat>
