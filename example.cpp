@@ -52,7 +52,7 @@ int main(int argc, char* argv[])
 	H.Simplify();
 
 	// set output precision (15 is maximal for double type)
-	cout << std::setprecision(15);
+	cout << std::setprecision(14);
 
 	// initialize normal form
 	NormalForm<N,order> NF(H);
