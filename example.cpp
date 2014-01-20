@@ -26,8 +26,8 @@ int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char* argv[])
 #endif
 {
-	const unsigned int N = 2;     // number of degree of freedom
-	const unsigned int order = 5; // normalization order
+	const int N = 2;     // number of degree of freedom
+	const int order = 5; // normalization order
 
 	typedef CPolynom<N>     Polynom;
 	typedef CMonomCoeff<N>  Term;
