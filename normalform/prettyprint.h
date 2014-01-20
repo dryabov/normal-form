@@ -6,15 +6,14 @@
 
 namespace normalform {
 
-	template<unsigned int N,unsigned int order,class Tfloat>
-//	std::ostream& operator <<(std::ostream& stream, const typename NormalForm<N,order,Tfloat>::serie& H)
+	template<size_t N,size_t order,class Tfloat>
 	std::ostream& operator <<(std::ostream& stream, const boost::array<CPolynom<N,Tfloat>,order>& H)
 	{
 		ios::fmtflags savedFlags(stream.flags());
 		stream << std::noshowpos;
 
 		Tfloat factorial = (Tfloat)1;
-		for(unsigned int i = 0; i < order; i++)
+		for(size_t i = 0; i < order; i++)
 		{
 			if(i > 0)
 				factorial *= i;
@@ -46,7 +45,7 @@ namespace normalform {
 					stream << "+(" << it->second.real()/factorial << std::showpos << it->second.imag()/factorial << std::noshowpos << "*I";
 
 				stream << " ";
-				for(unsigned int i = 0; i < 2*N; i++)
+				for(size_t i = 0; i < 2*N; i++)
 				{
 					if(it->first[i])
 					{
@@ -56,7 +55,7 @@ namespace normalform {
 							stream << "p" << (i+1-N);
 
 						if(it->first[i] > 1)
-							stream << "^" << (unsigned int)it->first[i];
+							stream << "^" << (size_t)it->first[i];
 
 						stream << " ";
 					}

@@ -13,7 +13,7 @@ namespace normalform {
 	using boost::array;
 
 	// binom coeffs
-	unsigned int C(const unsigned int n, unsigned int k)
+	size_t C(const size_t n, size_t k)
 	{
 		if (0 == k || n == k)
 			return 1;
@@ -22,9 +22,9 @@ namespace normalform {
 		if (1 == k)
 			return n;
 
-		unsigned int b = n + 1 - k;
+		size_t b = n + 1 - k;
 
-		for (unsigned int i = 2; i <= k; ++i)
+		for (size_t i = 2; i <= k; ++i)
 		{
 			b *= n + i - k;
 			b /= i;
@@ -32,7 +32,7 @@ namespace normalform {
 		return b;
 	}
 
-	template<unsigned int N,unsigned int order,class Tfloat=double>
+	template<size_t N,size_t order,class Tfloat=double>
 	class NormalForm {
 	public:
 		typedef array<CPolynom<N,Tfloat>,order> serie;
@@ -44,7 +44,7 @@ namespace normalform {
 			for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator it = p.list.begin(); it != p.list.end(); ++it)
 			{
 				int m_order = -2;
-				for(unsigned int i = 0; i < 2*N; i++)
+				for(size_t i = 0; i < 2*N; i++)
 					m_order += it->first[i];
 				if(m_order >= 0 && m_order < order)
 					H[m_order] += CMonomCoeff<N,Tfloat>(it);
@@ -64,7 +64,7 @@ namespace normalform {
 			for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator it = H0.list.begin(); it != H0.list.end(); ++it)
 			{
 				CMonomCoeff<N,Tfloat> m(it);
-				for(unsigned int i = 0; i < N; i++)
+				for(size_t i = 0; i < N; i++)
 					if(m.monom[i])
 					{
 						lambda[i] = m.coeff;
@@ -78,16 +78,16 @@ namespace normalform {
 #endif
 			L[0][0] = H[0];
 			K[0] = H[0];
-			for(unsigned int n = 1; n < order; n++)
+			for(size_t n = 1; n < order; n++)
 			{
 #ifdef NF_LOGGING
 				printf("\n%d-th order (%d-th in H)", n, n+2);
 #endif
 				L[n][0] = H[n];
-				for(unsigned int i = 1; i <= n; i++)
+				for(size_t i = 1; i <= n; i++)
 				{
 					L[n][i] = L[n][i-1];
-					for(unsigned int k = 0; k <= n-i; k++)
+					for(size_t k = 0; k <= n-i; k++)
 					{
 						//L[n][i] += (complex<Tfloat>)C(n-i,k) * (L[n-1-k][i-1] ^ S[k]);
 						CPolynom<N,Tfloat> LS = L[n-1-k][i-1] ^ S[k];
@@ -101,7 +101,7 @@ namespace normalform {
 					CMonomCoeff<N,Tfloat> f(it);
 
 					complex<Tfloat> res = 0;
-					for(unsigned int i = 0; i < N; i++)
+					for(size_t i = 0; i < N; i++)
 						res += lambda[i] * (complex<Tfloat>)(f.monom[i] - f.monom[i+N]);
 
 					if(!isZero(res))
@@ -111,7 +111,7 @@ namespace normalform {
 					}
 				}
 				CPolynom<N,Tfloat> dL = H[0] ^ S[n-1];
-				for(unsigned int i = 1; i <= n; i++)
+				for(size_t i = 1; i <= n; i++)
 				{
 					L[n][i] += dL;
 					L[n][i].Simplify();
@@ -120,7 +120,7 @@ namespace normalform {
 			}
 		}
 
-		serie getForwardTransform(const unsigned int i)
+		serie getForwardTransform(const size_t i)
 		{
 			serie X;
 			CMonomCoeff<N,Tfloat> mc;
@@ -131,15 +131,15 @@ namespace normalform {
 			X[0] += mc;
 			Xnj[0][0] = X[0];
 
-			for(unsigned int n = 1; n < order; n++)
+			for(size_t n = 1; n < order; n++)
 			{
 #ifdef NF_LOGGING
 				printf(".");
 #endif
-				for(unsigned int j = 1; j <= n; j++)
+				for(size_t j = 1; j <= n; j++)
 				{
 					Xnj[n][j] = Xnj[n][j-1];
-					for(unsigned int k = 0; k <= n-j; k++)
+					for(size_t k = 0; k <= n-j; k++)
 					{
 						//Xnj[n][j] += (complex<Tfloat>)C(n-j,k) * (Xnj[j+k-1][j-1] ^ S[n-(j+k)]);
 						CPolynom<N,Tfloat> XS = Xnj[j+k-1][j-1] ^ S[n-(j+k)];
@@ -153,7 +153,7 @@ namespace normalform {
 			return X;
 		}
 
-		serie getBackwardTransform(const unsigned int i)
+		serie getBackwardTransform(const size_t i)
 		{
 			serie Y;
 			CMonomCoeff<N,Tfloat> mc;
@@ -163,15 +163,15 @@ namespace normalform {
 			array<serie,order> Ynj;
 			Y[0] += mc;
 			Ynj[0][0] = Y[0];
-			for(unsigned int n = 1; n < order; n++)
+			for(size_t n = 1; n < order; n++)
 			{
 #ifdef NF_LOGGING
 				printf(".");
 #endif
-				for(unsigned int j = n; j > 0; j--)
+				for(size_t j = n; j > 0; j--)
 				{
 					Ynj[n][j-1] = Ynj[n][j];
-					for(unsigned int k = 0; k <= n-j; k++)
+					for(size_t k = 0; k <= n-j; k++)
 					{
 						//Ynj[n][j-1] -= (complex<Tfloat>)C(n-j,k) * (Ynj[n-k-1][j-1] ^ S[k]);
 						CPolynom<N,Tfloat> YS = Ynj[n-k-1][j-1] ^ S[k];

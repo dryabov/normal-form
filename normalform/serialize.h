@@ -13,19 +13,19 @@ namespace boost {
 
 		using namespace normalform;
 
-		template<class Archive,unsigned int N>
+		template<class Archive,size_t N>
 		void serialize(Archive &ar, CMonom<N> &m, const unsigned int version)
 		{
 			ar & m.powers;
 		}
 
-		template<class Archive,unsigned int N,class Tfloat>
+		template<class Archive,size_t N,class Tfloat>
 		void serialize(Archive &ar, CMonomCoeff<N,Tfloat> &mc, const unsigned int version)
 		{
 			ar & mc.coeff & mc.monom;
 		}
 
-		template<class Archive,unsigned int N,class Tfloat>
+		template<class Archive,size_t N,class Tfloat>
 		void serialize(Archive &ar, CPolynom<N,Tfloat> &p, const unsigned int version)
 		{
 			ar & p.list;

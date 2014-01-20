@@ -8,6 +8,11 @@
 #include "normalform/monom.h"
 #include "normalform/monomcoeff.h"
 
+#ifdef _OPENMP
+#include <omp.h>
+#endif
+
+
 namespace normalform {
 
 	using std::complex;
@@ -20,22 +25,22 @@ namespace normalform {
 
 
 	// friend functions
-	template<unsigned int N,class Tfloat> class CPolynom;
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>&, const complex<Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator *(const complex<Tfloat>&, const CPolynom<N,Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator ^(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
-	template<unsigned int N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&);
+	template<size_t,class Tfloat> class CPolynom;
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&, const CMonomCoeff<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>&, const complex<Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator *(const complex<Tfloat>&, const CPolynom<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator ^(const CPolynom<N,Tfloat>&, const CPolynom<N,Tfloat>&);
+	template<size_t N,class Tfloat> CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>&);
 
-	template<unsigned int N,class Tfloat=double>
+	template<size_t N,class Tfloat=double>
 	class CPolynom
 	{
 	public:
-		typedef boost::unordered_map<CMonom<N>,complex<Tfloat>> CMonomMap;
+		typedef boost::unordered_map<CMonom<N>,complex<Tfloat> > CMonomMap;
 		CMonomMap list;
 
 		CPolynom<N,Tfloat>()
@@ -70,7 +75,7 @@ namespace normalform {
 		CPolynom<N,Tfloat>& operator *=(const complex<Tfloat>& r);
 	};
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline void CPolynom<N,Tfloat>::Simplify()
 	{
 		if(list.empty())
@@ -85,7 +90,7 @@ namespace normalform {
 		}
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>& p)
 	{
 		CPolynom<N,Tfloat> pm(p);
@@ -94,7 +99,7 @@ namespace normalform {
 		return pm;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>& p1, const CPolynom<N,Tfloat>& p2)
 	{
 		CPolynom<N,Tfloat> p(p1);
@@ -103,7 +108,7 @@ namespace normalform {
 		return p;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat>& CPolynom<N,Tfloat>::operator +=(const CPolynom<N,Tfloat>& p)
 	{
 		for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator it = p.list.begin(); it != p.list.end(); ++it)
@@ -111,7 +116,7 @@ namespace normalform {
 		return *this;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator +(const CPolynom<N,Tfloat>& p, const CMonomCoeff<N,Tfloat>& mc)
 	{
 		CPolynom<N,Tfloat> p1(p);
@@ -119,14 +124,14 @@ namespace normalform {
 		return p1;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	CPolynom<N,Tfloat>& CPolynom<N,Tfloat>::operator +=(const CMonomCoeff<N,Tfloat>& mc)
 	{
 		list[mc.monom] += mc.coeff;
 		return *this;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>& p1, const CPolynom<N,Tfloat>& p2)
 	{
 		CPolynom<N,Tfloat> p(p1);
@@ -135,7 +140,7 @@ namespace normalform {
 		return p;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat>& CPolynom<N,Tfloat>::operator -=(const CPolynom<N,Tfloat>& p)
 	{
 		for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator it = p.list.begin(); it != p.list.end(); ++it)
@@ -143,7 +148,7 @@ namespace normalform {
 		return *this;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator -(const CPolynom<N,Tfloat>& p, const CMonomCoeff<N,Tfloat>& mc)
 	{
 		CPolynom<N,Tfloat> p1(p);
@@ -151,14 +156,14 @@ namespace normalform {
 		return p1;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat>& CPolynom<N,Tfloat>::operator -=(const CMonomCoeff<N,Tfloat>& mc)
 	{
 		list[mc.monom] -= mc.coeff;
 		return *this;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>& p1, const CPolynom<N,Tfloat>& p2)
 	{
 		CPolynom<N,Tfloat> p;
@@ -178,7 +183,7 @@ namespace normalform {
 		return p;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator *(const CPolynom<N,Tfloat>& p, const complex<Tfloat>& r)
 	{
 		if(isZero(r))
@@ -194,7 +199,7 @@ namespace normalform {
 		return p1;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator *(const complex<Tfloat>& r, const CPolynom<N,Tfloat>& p)
 	{
 		if(isZero(r))
@@ -210,7 +215,7 @@ namespace normalform {
 		return p1;
 	}
 
-	template<unsigned int N,class Tfloat>
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat>& CPolynom<N,Tfloat>::operator *=(const complex<Tfloat>& r)
 	{
 		if(isZero(r))
@@ -227,9 +232,9 @@ namespace normalform {
 
 		return *this;
 	}
-
-	template<unsigned int N,class Tfloat>
-	inline CPolynom<N,Tfloat> diff(const CPolynom<N,Tfloat>& p, const unsigned int j)
+/*
+	template<size_t N,class Tfloat>
+	inline CPolynom<N,Tfloat> diff(const CPolynom<N,Tfloat>& p, const size_t j)
 	{
 		CPolynom<N,Tfloat> D;
 		for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator it = p.list.begin(); it != p.list.end(); ++it)
@@ -242,33 +247,70 @@ namespace normalform {
 			}
 			return D;
 	}
-
-	template<unsigned int N,class Tfloat>
+*/
+	template<size_t N,class Tfloat>
 	inline CPolynom<N,Tfloat> operator ^(const CPolynom<N,Tfloat>& F, const CPolynom<N,Tfloat>& G)
 	{
 		//	CPolynom<N,Tfloat> C;
-		//	for(unsigned int j = 0; j < N; j++)
+		//	for(size_t j = 0; j < N; j++)
 		//		C += diff(F, j) * diff(G, j + N) - diff(G, j) * diff(F, j + N);
 		//	return C;
 
-		CPolynom<N,Tfloat> C1, C2;
-
-#pragma omp parallel sections
+#ifdef _OPENMP
+		if(F.list.size() < G.list.size())
 		{
-#pragma omp section
-			{
-				for(unsigned int j = 0; j < N; j++)
-					C1 += diff(F, j) * diff(G, j + N);
-			}
-#pragma omp section
-			{
-				for(unsigned int j = 0; j < N; j++)
-					C2 += diff(G, j) * diff(F, j + N);
-			}
+			return -(G^F);
 		}
-		C1 -= C2;
-		C1.Simplify();
-		return C1;
+#endif
+
+		CPolynom<N,Tfloat> C;
+		#pragma omp parallel shared(C)
+		{
+#ifdef _OPENMP
+			int thread_count = omp_get_num_threads();
+			int thread_num = omp_get_thread_num();
+			size_t chunk_size = F.list.size() / thread_count;
+
+			typename CPolynom<N,Tfloat>::CMonomMap::const_iterator begin = F.list.begin();
+			std::advance(begin, thread_num * chunk_size);
+
+			typename CPolynom<N,Tfloat>::CMonomMap::const_iterator end = begin;
+			if(thread_num == thread_count - 1)
+				end = F.list.end();
+			else
+				std::advance(end, chunk_size);
+#else
+			typename CPolynom<N,Tfloat>::CMonomMap::const_iterator begin = F.list.begin();
+			typename CPolynom<N,Tfloat>::CMonomMap::const_iterator end = F.list.end();
+#endif
+			#pragma omp barrier
+			CPolynom<N,Tfloat> Cchunk;
+			for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator itF = begin; itF != end; ++itF)
+			{
+				CMonomCoeff<N,Tfloat> mcF(itF);
+				for(typename CPolynom<N,Tfloat>::CMonomMap::const_iterator itG = G.list.begin(); itG != G.list.end(); ++itG)
+				{
+					CMonomCoeff<N,Tfloat> mcG(itG);
+					CMonomCoeff<N,Tfloat> mcFG = mcF*mcG;
+					for(size_t j = 0; j < N; j++)
+					{
+						int diff = mcF.monom[j] * mcG.monom[j+N] - mcG.monom[j] * mcF.monom[j+N];
+						if(diff)
+						{
+							CMonomCoeff<N,Tfloat> mc(mcFG);
+							mc.coeff *= complex<Tfloat>(diff);
+							mc.monom[j]--;
+							mc.monom[j+N]--;
+							Cchunk += mc;
+						}
+					}
+				}
+			}
+			#pragma omp critical
+			C += Cchunk;
+		}
+		C.Simplify();
+		return C;
 	}
 
 } // namespace normalform

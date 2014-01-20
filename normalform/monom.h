@@ -7,10 +7,10 @@ namespace normalform {
 	typedef unsigned char IntPower;
 
 	//friend function
-	template<unsigned int N> class CMonom;
-	template<unsigned int N> CMonom<N> operator*(CMonom<N>, const CMonom<N>&);
+	template<size_t N> class CMonom;
+	template<size_t N> CMonom<N> operator*(CMonom<N>, const CMonom<N>&);
 
-	template<unsigned int N>
+	template<size_t N>
 	class CMonom
 	{
 	public:
@@ -48,11 +48,11 @@ namespace normalform {
 		bool operator<=(const CMonom<N>& rhs) const{return !(*this>rhs);};
 		bool operator>=(const CMonom<N>& rhs) const{return !(*this<rhs);};
 
-		IntPower& operator[](const unsigned int j)
+		IntPower& operator[](const size_t j)
 		{
 			return powers[j];
 		};
-		const IntPower& operator[](const unsigned int j) const
+		const IntPower& operator[](const size_t j) const
 		{
 			return powers[j];
 		};
@@ -67,19 +67,19 @@ namespace normalform {
 		friend CMonom<N> operator* <>(CMonom<N> lhs, const CMonom<N>& rhs);
 	};
 
-	template<unsigned int N>
+	template<size_t N>
 	inline CMonom<N> operator*(CMonom<N> lhs, const CMonom<N>& rhs)
 	{
 		lhs *= rhs;
 		return lhs;
 	}
 
-	template<unsigned int N>
+	template<size_t N>
 	inline size_t hash_value(const CMonom<N>& m)
 	{
 		size_t seed = 0;
 
-		for(unsigned int i = 0; i < 2*N; i++)
+		for(size_t i = 0; i < 2*N; i++)
 			boost::hash_combine(seed, m[i]);
 
 		return seed;
