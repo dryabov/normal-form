@@ -85,7 +85,7 @@ namespace normalform {
 			for(size_t n = 1; n < order; n++)
 			{
 #ifdef NF_LOGGING
-				std::cout << "\n" << n << "-th order (" << (n+2) << "-th in H)";
+				std::cout << n << "-th order (" << (n+2) << "-th in H)\n";
 #endif
 				L[n][0] = H[n];
 				for(size_t i = 1; i <= n; i++)
